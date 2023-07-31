@@ -73,10 +73,10 @@ logging:
     project:
     api_token:
     tags:
-  wandb: false
-  wandb_creds:
+  wandb: true
+  wandb_creds: 7dd1ae55c16a20034061b5edc24ee0d0f2e6fc64
     name:
-    project:
+    project: nano_t5
     entity:
   prefix: ''
   every_steps: 100
