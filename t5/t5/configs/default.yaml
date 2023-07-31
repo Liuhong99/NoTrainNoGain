@@ -68,9 +68,16 @@ checkpoint:
   every_steps: 500000 # Checkpoint in the end
 
 logging:
-  wandb: True
-  wandb_creds: '7dd1ae55c16a20034061b5edc24ee0d0f2e6fc64' 
-  project: 'nano_t5'
+  neptune: false
+  neptune_creds:
+    project:
+    api_token:
+    tags:
+  wandb: true
+  wandb_creds:
+    name:
+    project: 'nanot5'
+    entity:
   prefix: ''
   every_steps: 100
   grad_l2: true
