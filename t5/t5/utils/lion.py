@@ -45,7 +45,7 @@ class Lion(Optimizer):
         self,
         params,
         lr: float = 1e-4,
-        betas: Tuple[float, float] = (0.9, 0.99),
+        betas: Tuple[float, float] = (0.95, 0.99),
         weight_decay: float = 0.0,
     ):
         assert lr > 0.0
