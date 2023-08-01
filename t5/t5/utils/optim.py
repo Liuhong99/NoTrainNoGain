@@ -127,6 +127,32 @@ def get_lr_scheduler(optimizer, args, logger):
             )
 
         return LambdaLR(optimizer, lr_lambda, -1)
+    elif args.optim.lr_scheduler == "old-cosine-budget":
+        import math
+
+        from torch.optim.lr_scheduler import LambdaLR
+
+        num_warmup_steps = args.optim.warmup_steps
+        num_training_steps = args.optim.total_steps
+        num_cycles = 0.5
+
+        def lr_lambda(current_step):
+            fake_step = current_step
+
+            if fake_step < num_warmup_steps:
+                return (
+                    (float(fake_step) / float(max(1, num_warmup_steps)))
+                )
+
+            progress = float(fake_step - num_warmup_steps) / float(
+                max(1, num_training_steps - num_warmup_steps)
+            )
+            return max(
+                1e-5,
+                0.5 * (1.0 + math.cos(math.pi * float(num_cycles) * 2.0 * progress)),
+            )
+
+        return LambdaLR(optimizer, lr_lambda, -1)
     else:
         raise NotImplementedError
 
