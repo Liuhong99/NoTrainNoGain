@@ -105,6 +105,19 @@ def extra_stats(args, model, optimizer):
             sum(p.detach().norm(2).item() ** 2 for p in model.parameters()) ** 0.5
         )
         stats["weights_l2"] = weights_l2
+    
+    if isinstance(optimizer, SophiaG):
+        LL = len(optimizer.state_dict()['state'])
+        
+        for jj in range(LL):
+            num_param += optimizer.state_dict()['state'][jj]['exp_avg'].numel()
+            num_effective += torch.sum(torch.abs(optimizer.state_dict()['state'][jj]['exp_avg']) < args.optim.rho * 5120 * optimizer.state_dict()['state'][jj]['hessian'])
+            #hessian_norm += optimizer.state_dict()['state'][jj]['hessian'].detach().norm(1).item()
+            hessian_norm2 += optimizer.state_dict()['state'][jj]['hessian'].detach().norm(2).item() ** 2
+        hessian_norm2 = hessian_norm2 ** 0.5
+
+        stats["hessian_l2"] = hessian_norm2
+        stats["win_rate"] = num_effective / num_param
 
     cur_lr = optimizer.param_groups[0]["lr"]
     stats["lr"] = cur_lr
