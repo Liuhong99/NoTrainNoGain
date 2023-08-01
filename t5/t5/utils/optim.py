@@ -23,6 +23,15 @@ def get_optimizer(model, args):
             weight_decay=args.optim.weight_decay,
             lr=args.optim.base_lr,
         )
+    elif args.optim.name == "sophiarms":
+        from .sophia import SophiaG_RMS
+
+        optimizer = SophiaG_RMS(
+            model.parameters(),
+            rho=args.optim.rho,
+            weight_decay=args.optim.weight_decay,
+            lr=args.optim.base_lr,
+        )
     else:
         raise NotImplementedError
 

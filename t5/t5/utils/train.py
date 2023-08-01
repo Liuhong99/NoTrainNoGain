@@ -9,6 +9,7 @@ from .copied import AdamWScale
 from .lion import Lion
 from .logging import Averager
 from .sophia import SophiaG
+from .sophia import SophiaG_RMS
 
 
 def maybe_save_checkpoint(accelerator, args):
@@ -322,7 +323,7 @@ def train(
                 maybe_eval_predict(model, test_dataloader, logger, args, tokenizer)
 
                 if (
-                    isinstance(optimizer.optimizer, SophiaG)
+                    (isinstance(optimizer.optimizer, SophiaG) or isinstance(optimizer.optimizer, SophiaG_RMS))
                     and args.current_train_step % args.sophia_freq == 0
                 ):
                     sophia_update = True
