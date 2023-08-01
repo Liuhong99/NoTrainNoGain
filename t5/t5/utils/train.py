@@ -106,7 +106,7 @@ def extra_stats(args, model, optimizer):
         )
         stats["weights_l2"] = weights_l2
     
-    if isinstance(optimizer, SophiaG):
+    if args.optim.name == 'sophia':
         LL = len(optimizer.state_dict()['state'])
         
         for jj in range(LL):
