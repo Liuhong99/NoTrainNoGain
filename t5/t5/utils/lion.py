@@ -23,7 +23,7 @@ def update_fn(p, grad, exp_avg, lr, wd, beta1, beta2):
     # stepweight decay
 
     # Adafactor RMS
-    lr = lr * max(1e-3, _rms(p.data))
+    lr = lr * max(1e-4, _rms(p.data))
 
     p.data.mul_(1 - lr * wd)
 
