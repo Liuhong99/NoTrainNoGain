@@ -110,6 +110,7 @@ def extra_stats(args, model, optimizer):
         LL = len(optimizer.state_dict()['state'])
         num_param = 0
         num_effective = 0
+        hessian_norm2 = 0
         for jj in range(LL):
             num_param += optimizer.state_dict()['state'][jj]['exp_avg'].numel()
             num_effective += torch.sum(torch.abs(optimizer.state_dict()['state'][jj]['exp_avg']) < args.optim.rho * 5120 * optimizer.state_dict()['state'][jj]['hessian'])
