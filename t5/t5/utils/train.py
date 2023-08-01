@@ -236,6 +236,8 @@ def get_optimizer_time(optimizer, args):
 
     if isinstance(optimizer.optimizer, SophiaG):
         return 1.156
+    if isinstance(optimizer.optimizer, SophiaG_RMS):
+        return 1.156
     elif isinstance(optimizer.optimizer, Lion):
         return 1.043
     elif isinstance(optimizer.optimizer, AdamWScale):
