@@ -482,7 +482,7 @@ def _single_tensor_sophiag_rms(
         if capturable:
             step = step_t
             # Adafactor RMS
-            step_size_rel = max(1e-3, _rms(param.data))
+            step_size_rel = max(1e-4, _rms(param.data))
             step_size_neg = lr.neg()
 
             ratio = (exp_avg.abs() / (rho * bs * hess + 1e-15)).clamp(None, step_size_rel)
@@ -490,7 +490,7 @@ def _single_tensor_sophiag_rms(
         else:
             step = step_t.item()
             # Adafactor RMS
-            step_size_rel = max(1e-3, _rms(param.data))
+            step_size_rel = max(1e-4, _rms(param.data))
             step_size_neg = -lr
 
             ratio = (exp_avg.abs() / (rho * bs * hess + 1e-15)).clamp(None, step_size_rel)
