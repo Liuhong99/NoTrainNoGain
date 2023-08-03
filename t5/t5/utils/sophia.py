@@ -343,6 +343,7 @@ class SophiaG_RMS(Optimizer):
             params_with_grad = []
             grads = []
             exp_avgs = []
+            rmss = []
             state_steps = []
             hessian = []
             beta1, beta2 = group["betas"]

@@ -121,7 +121,7 @@ def extra_stats(args, model, optimizer):
         stats["hessian_l2"] = hessian_norm2
         stats["win_rate"] = num_effective / num_param
 
-    if args.optim.name == 'sophiarms':
+    if args.optim.name == "sophiarms":
         LL = len(optimizer.state_dict()['state'])
         num_param = 0
         num_effective = 0
