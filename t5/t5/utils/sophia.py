@@ -502,7 +502,7 @@ def _single_tensor_sophiag_rms(
             # Adafactor RMS
             step_size_rel = max(1e-5, _rms(param.data))
             step_size_neg = lr.neg()
-            rms = step_size_rel
+            rms.neg_(rms).add_(step_size_rel)
 
             ratio = (exp_avg.abs() / (rho * bs * hess + 1e-15)).clamp(None, step_size_rel)
             param.addcmul_(exp_avg.sign(), ratio, value=step_size_neg)
@@ -511,7 +511,7 @@ def _single_tensor_sophiag_rms(
             # Adafactor RMS
             step_size_rel = max(1e-5, _rms(param.data))
             step_size_neg = -lr
-            rms = step_size_rel
+            rms.neg_(rms).add_(step_size_rel)
 
             ratio = (exp_avg.abs() / (rho * bs * hess + 1e-15)).clamp(None, step_size_rel)
             param.addcmul_(exp_avg.sign(), ratio, value=step_size_neg)
