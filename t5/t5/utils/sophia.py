@@ -313,6 +313,11 @@ class SophiaG_RMS(Optimizer):
                         if self.defaults["capturable"]
                         else torch.tensor(0.0)
                     )
+                    state["rms"] = (
+                        torch.zeros((1,), dtype=torch.float, device=p.device)
+                        if self.defaults["capturable"]
+                        else torch.tensor(0.0)
+                    )
                     state["exp_avg"] = torch.zeros_like(
                         p, memory_format=torch.preserve_format
                     )
@@ -358,6 +363,11 @@ class SophiaG_RMS(Optimizer):
                         if self.defaults["capturable"]
                         else torch.tensor(0.0)
                     )
+                    state["rms"] = (
+                        torch.zeros((1,), dtype=torch.float, device=p.device)
+                        if self.defaults["capturable"]
+                        else torch.tensor(0.0)
+                    )
                     state["exp_avg"] = torch.zeros_like(
                         p, memory_format=torch.preserve_format
                     )
@@ -371,6 +381,7 @@ class SophiaG_RMS(Optimizer):
                     )
 
                 exp_avgs.append(state["exp_avg"])
+                rmss.append(state["rms"])
                 state_steps.append(state["step"])
                 hessian.append(state["hessian"])
 
@@ -381,6 +392,7 @@ class SophiaG_RMS(Optimizer):
                 params_with_grad,
                 grads,
                 exp_avgs,
+                rmss,
                 hessian,
                 state_steps,
                 bs=bs,
@@ -400,6 +412,7 @@ def sophiag_rms(
     params: List[Tensor],
     grads: List[Tensor],
     exp_avgs: List[Tensor],
+    rmss: List[Tensor],
     hessian: List[Tensor],
     state_steps: List[Tensor],
     capturable: bool = False,
@@ -424,6 +437,7 @@ def sophiag_rms(
         params,
         grads,
         exp_avgs,
+        rmss,
         hessian,
         state_steps,
         bs=bs,
@@ -442,6 +456,7 @@ def _single_tensor_sophiag_rms(
     params: List[Tensor],
     grads: List[Tensor],
     exp_avgs: List[Tensor],
+    rmss: List[Tensor],
     hessian: List[Tensor],
     state_steps: List[Tensor],
     *,
@@ -458,6 +473,7 @@ def _single_tensor_sophiag_rms(
     for i, param in enumerate(params):
         grad = grads[i] if not maximize else -grads[i]
         exp_avg = exp_avgs[i]
+        rms = rmss[i]
         hess = hessian[i]
         step_t = state_steps[i]
 
@@ -467,6 +483,7 @@ def _single_tensor_sophiag_rms(
         if torch.is_complex(param):
             grad = torch.view_as_real(grad)
             exp_avg = torch.view_as_real(exp_avg)
+            rms = torch.view_as_real(rms)
             hess = torch.view_as_real(hess)
             param = torch.view_as_real(param)
 
@@ -484,6 +501,7 @@ def _single_tensor_sophiag_rms(
             # Adafactor RMS
             step_size_rel = max(1e-4, _rms(param.data))
             step_size_neg = lr.neg()
+            rms = step_size_rel
 
             ratio = (exp_avg.abs() / (rho * bs * hess + 1e-15)).clamp(None, step_size_rel)
             param.addcmul_(exp_avg.sign(), ratio, value=step_size_neg)
@@ -492,6 +510,7 @@ def _single_tensor_sophiag_rms(
             # Adafactor RMS
             step_size_rel = max(1e-4, _rms(param.data))
             step_size_neg = -lr
+            rms = step_size_rel
 
             ratio = (exp_avg.abs() / (rho * bs * hess + 1e-15)).clamp(None, step_size_rel)
             param.addcmul_(exp_avg.sign(), ratio, value=step_size_neg)

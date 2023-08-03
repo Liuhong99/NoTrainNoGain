@@ -121,6 +121,21 @@ def extra_stats(args, model, optimizer):
         stats["hessian_l2"] = hessian_norm2
         stats["win_rate"] = num_effective / num_param
 
+    if args.optim.name == 'sophiarms':
+        LL = len(optimizer.state_dict()['state'])
+        num_param = 0
+        num_effective = 0
+        hessian_norm2 = 0
+        for jj in range(LL):
+            num_param += optimizer.state_dict()['state'][jj]['exp_avg'].numel()
+            num_effective += torch.sum(torch.abs(optimizer.state_dict()['state'][jj]['exp_avg']) < args.optim.rho * 5120 * optimizer.state_dict()['state'][jj]['hessian'] * optimizer.state_dict()['state'][jj]['rms']) 
+            #hessian_norm += optimizer.state_dict()['state'][jj]['hessian'].detach().norm(1).item()
+            hessian_norm2 += optimizer.state_dict()['state'][jj]['hessian'].detach().norm(2).item() ** 2
+        hessian_norm2 = hessian_norm2 ** 0.5
+
+        stats["hessian_l2"] = hessian_norm2
+        stats["win_rate"] = num_effective / num_param
+
     cur_lr = optimizer.param_groups[0]["lr"]
     stats["lr"] = cur_lr
 
