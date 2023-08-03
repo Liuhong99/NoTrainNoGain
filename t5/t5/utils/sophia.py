@@ -310,13 +310,9 @@ class SophiaG_RMS(Optimizer):
                 if len(state) == 0:
                     state["step"] = (
                         torch.zeros((1,), dtype=torch.float, device=p.device)
-                        if self.defaults["capturable"]
-                        else torch.tensor(0.0)
                     )
                     state["rms"] = (
                         torch.zeros((1,), dtype=torch.float, device=p.device)
-                        if self.defaults["capturable"]
-                        else torch.tensor(0.0)
                     )
                     state["exp_avg"] = torch.zeros_like(
                         p, memory_format=torch.preserve_format
@@ -361,13 +357,9 @@ class SophiaG_RMS(Optimizer):
                 if len(state) == 0:
                     state["step"] = (
                         torch.zeros((1,), dtype=torch.float, device=p.device)
-                        if self.defaults["capturable"]
-                        else torch.tensor(0.0)
                     )
                     state["rms"] = (
                         torch.zeros((1,), dtype=torch.float, device=p.device)
-                        if self.defaults["capturable"]
-                        else torch.tensor(0.0)
                     )
                     state["exp_avg"] = torch.zeros_like(
                         p, memory_format=torch.preserve_format
