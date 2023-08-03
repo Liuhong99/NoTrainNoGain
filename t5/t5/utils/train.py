@@ -10,6 +10,7 @@ from .lion import Lion
 from .logging import Averager
 from .sophia import SophiaG
 from .sophia import SophiaG_RMS
+from .sophia import SophiaG_OG
 
 
 def maybe_save_checkpoint(accelerator, args):
@@ -106,7 +107,7 @@ def extra_stats(args, model, optimizer):
         )
         stats["weights_l2"] = weights_l2
     
-    if args.optim.name == 'sophia':
+    if args.optim.name == 'sophia' or args.optim.name == 'sophia_og':
         LL = len(optimizer.state_dict()['state'])
         num_param = 0
         num_effective = 0
@@ -268,6 +269,8 @@ def get_optimizer_time(optimizer, args):
         return 1.156
     if isinstance(optimizer.optimizer, SophiaG_RMS):
         return 1.156
+    if isinstance(optimizer.optimizer, SophiaG_OG):
+        return 1.156
     elif isinstance(optimizer.optimizer, Lion):
         return 1.043
     elif isinstance(optimizer.optimizer, AdamWScale):
@@ -355,7 +358,7 @@ def train(
                 maybe_eval_predict(model, test_dataloader, logger, args, tokenizer)
 
                 if (
-                    (isinstance(optimizer.optimizer, SophiaG) or isinstance(optimizer.optimizer, SophiaG_RMS))
+                    (isinstance(optimizer.optimizer, SophiaG) or isinstance(optimizer.optimizer, SophiaG_RMS) or isinstance(optimizer.optimizer, SophiaG_OG))
                     and args.current_train_step % args.sophia_freq == 0
                 ):
                     sophia_update = True
