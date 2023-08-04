@@ -10,6 +10,7 @@ from .lion import Lion
 from .logging import Averager
 from .sophia import SophiaG
 from .sophia import SophiaG_RMS
+from .sophia import SophiaG_RMSD
 from .sophia import SophiaG_OG
 
 
@@ -122,7 +123,7 @@ def extra_stats(args, model, optimizer):
         stats["hessian_l2"] = hessian_norm2
         stats["win_rate"] = num_effective / num_param
 
-    if args.optim.name == "sophiarms":
+    if args.optim.name == "sophiarms" or args.optim.name == "sophiarmsd":
         LL = len(optimizer.state_dict()['state'])
         num_param = 0
         num_effective = 0
@@ -269,6 +270,8 @@ def get_optimizer_time(optimizer, args):
         return 1.156
     if isinstance(optimizer.optimizer, SophiaG_RMS):
         return 1.156
+    if isinstance(optimizer.optimizer, SophiaG_RMSD):
+        return 1.156
     if isinstance(optimizer.optimizer, SophiaG_OG):
         return 1.156
     elif isinstance(optimizer.optimizer, Lion):
@@ -358,7 +361,7 @@ def train(
                 maybe_eval_predict(model, test_dataloader, logger, args, tokenizer)
 
                 if (
-                    (isinstance(optimizer.optimizer, SophiaG) or isinstance(optimizer.optimizer, SophiaG_RMS) or isinstance(optimizer.optimizer, SophiaG_OG))
+                    (isinstance(optimizer.optimizer, SophiaG) or isinstance(optimizer.optimizer, SophiaG_RMS) or isinstance(optimizer.optimizer, SophiaG_RMSD) or isinstance(optimizer.optimizer, SophiaG_OG))
                     and args.current_train_step % args.sophia_freq == 0
                 ):
                     sophia_update = True

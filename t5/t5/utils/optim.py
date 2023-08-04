@@ -32,6 +32,15 @@ def get_optimizer(model, args):
             weight_decay=args.optim.weight_decay,
             lr=args.optim.base_lr,
         )
+    elif args.optim.name == "sophiarmsd":
+        from .sophia import SophiaG_RMSD
+
+        optimizer = SophiaG_RMSD(
+            model.parameters(),
+            rho=args.optim.rho,
+            weight_decay=args.optim.weight_decay,
+            lr=args.optim.base_lr,
+        )
     elif args.optim.name == "sophiaog":
         from .sophia import SophiaG_OG
 
